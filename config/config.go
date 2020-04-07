@@ -35,7 +35,7 @@ func New() Config {
 			KeySize:         2,
 			KeyBytes:        "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 			PoolSize:        50,
-			ReplaceInterval: time.Second,
+			ReplaceInterval: 200 * time.Millisecond,
 		},
 	}
 }

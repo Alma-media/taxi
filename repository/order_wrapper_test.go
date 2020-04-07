@@ -6,16 +6,16 @@ import (
 	"testing"
 
 	genMock "github.com/Alma-media/taxi/generator/mock"
-	repoMock "github.com/Alma-media/taxi/repository/mock"
+	storageMock "github.com/Alma-media/taxi/storage/mock"
 )
 
-func Test_OrderWrapper(t *testing.T) {
+func Test_Pipe(t *testing.T) {
 	t.Run("test if source error is propagated", func(t *testing.T) {
 		errExpected := errors.New("source failure")
 
 		source := genMock.GeneratorFailure{Err: errExpected}
 
-		wrapper := NewOrderWrapper(source, nil)
+		wrapper := NewPipe(source, nil)
 
 		if _, err := wrapper.Order(context.Background()); err != errExpected {
 			t.Errorf(`error "%v" was expected to be "%v"`, err, errExpected)
@@ -25,7 +25,7 @@ func Test_OrderWrapper(t *testing.T) {
 	t.Run("test if error returned by original repository is propagated", func(t *testing.T) {
 		errExpected := errors.New("repository failure")
 
-		repo := repoMock.OrderFailure{Err: errExpected}
+		repo := storageMock.OrderFailure{Err: errExpected}
 
 		source := make(genMock.GeneratorSuccess)
 		go func() {
@@ -33,7 +33,7 @@ func Test_OrderWrapper(t *testing.T) {
 			source <- "AA"
 		}()
 
-		wrapper := NewOrderWrapper(source, repo)
+		wrapper := NewPipe(source, repo)
 
 		if _, err := wrapper.Order(context.Background()); err != errExpected {
 			t.Errorf(`error "%v" was expected to be "%v"`, err, errExpected)
@@ -41,7 +41,7 @@ func Test_OrderWrapper(t *testing.T) {
 	})
 
 	t.Run("test save order happy flow", func(t *testing.T) {
-		repo := repoMock.OrderSuccess{}
+		repo := storageMock.OrderSuccess{}
 
 		inputSequence := []string{"AA", "BB", "CC"}
 
@@ -55,7 +55,7 @@ func Test_OrderWrapper(t *testing.T) {
 			}
 		}()
 
-		wrapper := NewOrderWrapper(source, repo)
+		wrapper := NewPipe(source, repo)
 
 		for _, expected := range outputSequence {
 			order, _ := wrapper.Order(context.Background())

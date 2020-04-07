@@ -4,6 +4,12 @@ import (
 	"context"
 
 	"github.com/Alma-media/taxi/model"
+	"github.com/Alma-media/taxi/storage"
+)
+
+var (
+	_ storage.Order = OrderSuccess{}
+	_ storage.Order = OrderFailure{}
 )
 
 // OrderSuccess mock

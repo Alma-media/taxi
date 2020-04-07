@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Alma-media/taxi/model"
+	"github.com/Alma-media/taxi/storage"
 )
 
 // Source is an abstract source of orders
@@ -11,30 +12,29 @@ type Source interface {
 	Generate(ctx context.Context) (string, error)
 }
 
-// OrderWrapper is a wrapper that combines orders source and storage
-type OrderWrapper struct {
-	OrderRepository
-
-	source Source
+// Pipe is a wrapper that combines orders source and storage
+type Pipe struct {
+	storage storage.Order
+	source  Source
 }
 
-// NewOrderWrapper creates a "proxy" for provided generator in order to count
+// NewPipe creates a "proxy" for provided generator in order to count
 // the calls and store orders to the repository
-func NewOrderWrapper(source Source, original OrderRepository) *OrderWrapper {
-	return &OrderWrapper{
-		OrderRepository: original,
-		source:          source,
+func NewPipe(source Source, storage storage.Order) *Pipe {
+	return &Pipe{
+		storage: storage,
+		source:  source,
 	}
 }
 
-// Order wraps original Order() func
-func (p *OrderWrapper) Order(ctx context.Context) (*model.Order, error) {
+// Order wraps original Order() method
+func (p *Pipe) Order(ctx context.Context) (*model.Order, error) {
 	key, err := p.source.Generate(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	order, err := p.OrderRepository.Save(ctx, key)
+	order, err := p.storage.Save(ctx, key)
 	if err != nil {
 		return nil, err
 	}
@@ -42,4 +42,9 @@ func (p *OrderWrapper) Order(ctx context.Context) (*model.Order, error) {
 	order.Increment()
 
 	return order, nil
+}
+
+// List wrap original List() method
+func (p *Pipe) List(ctx context.Context) ([]*model.Order, error) {
+	return p.storage.List(ctx)
 }

@@ -9,15 +9,15 @@ import (
 	"github.com/Alma-media/taxi/repository"
 )
 
-// OrderRepository is an abstract implementation of order repository
-type OrderRepository struct {
+// OrderStorage is an abstract storage implementation
+type OrderStorage struct {
 	mu     sync.RWMutex
 	orders map[string]*model.Order
 }
 
-// NewOrderRepository creates a new order repository based on a map
-func NewOrderRepository() *OrderRepository {
-	return &OrderRepository{
+// NewOrderStorage creates a new order repository based on a map
+func NewOrderStorage() *OrderStorage {
+	return &OrderStorage{
 		orders: make(map[string]*model.Order),
 	}
 }
@@ -25,7 +25,7 @@ func NewOrderRepository() *OrderRepository {
 // Save the order (emulates "upsert" behavior)
 // Always returns nil, context is not used in the current implementation but might be
 // required by another driver, e.g. database)
-func (repo *OrderRepository) Save(_ context.Context, key string) (*model.Order, error) {
+func (repo *OrderStorage) Save(_ context.Context, key string) (*model.Order, error) {
 	repo.mu.Lock()
 	defer repo.mu.Unlock()
 
@@ -42,7 +42,7 @@ func (repo *OrderRepository) Save(_ context.Context, key string) (*model.Order, 
 
 // List retrieves all stored entities sorted by ID (current implementation cannot
 // fail retrieving the list)
-func (repo *OrderRepository) List(_ context.Context) ([]*model.Order, error) {
+func (repo *OrderStorage) List(_ context.Context) ([]*model.Order, error) {
 	repo.mu.RLock()
 	list := make([]*model.Order, 0, len(repo.orders))
 	for _, order := range repo.orders {

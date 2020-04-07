@@ -5,7 +5,10 @@ import (
 	"testing"
 
 	"github.com/Alma-media/taxi/model"
+	"github.com/Alma-media/taxi/storage"
 )
+
+var _ storage.Order = (*OrderStorage)(nil)
 
 var (
 	aa = model.NewOrder("AA")
@@ -14,11 +17,11 @@ var (
 	dd = model.NewOrder("DD")
 )
 
-func Test_OrderRepository(t *testing.T) {
+func Test_OrderStorage(t *testing.T) {
 	toBeSaved := []string{"DD", "AA", "CC", "BB", "AA", "AA"}
 
 	t.Run("test save order", func(t *testing.T) {
-		repo := NewOrderRepository()
+		repo := NewOrderStorage()
 
 		for _, order := range toBeSaved {
 			repo.Save(nil, order)
@@ -32,7 +35,7 @@ func Test_OrderRepository(t *testing.T) {
 	})
 
 	t.Run("test order list", func(t *testing.T) {
-		repo := NewOrderRepository()
+		repo := NewOrderStorage()
 
 		for _, order := range toBeSaved {
 			repo.Save(nil, order)

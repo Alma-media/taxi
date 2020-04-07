@@ -74,6 +74,7 @@ func Test_Generator(t *testing.T) {
 	t.Run("test if error is returned generating the key by inactive generator", func(t *testing.T) {
 		gen := New(config)
 
+		// "fake" context with timeout/deadline (any canceled context is suitable)
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel()
 
@@ -82,7 +83,7 @@ func Test_Generator(t *testing.T) {
 			t.Error("error was expected")
 		}
 		if err != context.Canceled {
-			t.Errorf("unexpected error: %s", err)
+			t.Errorf("%q error was expected but got %q", context.Canceled, err)
 		}
 	})
 }

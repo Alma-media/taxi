@@ -27,7 +27,7 @@ func Test_OrderRepository(t *testing.T) {
 		expected := map[string]*model.Order{"AA": aa, "BB": bb, "CC": cc, "DD": dd}
 
 		if !reflect.DeepEqual(repo.orders, expected) {
-			t.Errorf("repository was expected to contain %v but has %v", expected, repo.orders)
+			t.Errorf("repository %v was expected to equal %v", repo.orders, expected)
 		}
 	})
 
@@ -43,7 +43,7 @@ func Test_OrderRepository(t *testing.T) {
 		actual, _ := repo.List(nil)
 
 		if !reflect.DeepEqual(actual, expected) {
-			t.Errorf("list was expected to contain %v but has %v", expected, actual)
+			t.Errorf("list %v was expected to contain %v", actual, expected)
 		}
 	})
 }

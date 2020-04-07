@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/tiny-go/taxi/model"
+	"github.com/Alma-media/taxi/model"
 )
 
 // Order represents a repository suitable for keeping orders

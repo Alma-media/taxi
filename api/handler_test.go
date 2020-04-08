@@ -22,7 +22,7 @@ func Test_NewHandler(t *testing.T) {
 	testCases := []testCase{
 		{
 			title: "test if error is reurned when call to repository.Order() fails",
-			url:   "/request/",
+			url:   "/request",
 			repository: mock.OrderRepository{
 				Err: errors.New("order failure"),
 			},
@@ -31,7 +31,7 @@ func Test_NewHandler(t *testing.T) {
 		},
 		{
 			title: "test getting order from repository with success",
-			url:   "/request/",
+			url:   "/request",
 			repository: mock.OrderRepository{
 				OrderResponse: &model.Order{
 					ID: "XX",

@@ -29,7 +29,7 @@ func NewHandler(repo OrderRepository) http.Handler {
 	// is the most efficient choise (no need to use gin, gorilla, julienschmidt
 	// or any other router based on RADIX tree)
 	mux := http.NewServeMux()
-	mux.Handle("/request/", CreateRequestHandler(repo))
+	mux.Handle("/request", CreateRequestHandler(repo))
 	mux.Handle("/admin/requests", CreateAdminHandler(repo))
 
 	return mux

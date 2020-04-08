@@ -6,14 +6,24 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
-	"github.com/Alma-media/taxi/repository"
+	"github.com/Alma-media/taxi/model"
 )
 
+// OrderRepository represents a repository suitable for keeping orders
+type OrderRepository interface {
+	// Save should return random order from the abstract srotage
+	Order(ctx context.Context) (*model.Order, error)
+
+	// List should return a list of orders (generate a report)
+	List(ctx context.Context) ([]*model.Order, error)
+}
+
 // NewHandler creates an HTTP handler
-func NewHandler(repo repository.OrderRepository) http.Handler {
+func NewHandler(repo OrderRepository) http.Handler {
 	// since we do not need support for dynamic routes and parameters default ServeMux
 	// is the most efficient choise (no need to use gin, gorilla, julienschmidt
 	// or any other router based on RADIX tree)
@@ -25,7 +35,7 @@ func NewHandler(repo repository.OrderRepository) http.Handler {
 }
 
 // CreateRequestHandler creates a handler that returns a single random order
-func CreateRequestHandler(repo repository.OrderRepository) http.HandlerFunc {
+func CreateRequestHandler(repo OrderRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		order, err := repo.Order(r.Context())
 		if err != nil {
@@ -37,7 +47,7 @@ func CreateRequestHandler(repo repository.OrderRepository) http.HandlerFunc {
 }
 
 // CreateAdminHandler creates a handler that generates a report
-func CreateAdminHandler(repo repository.OrderRepository) http.HandlerFunc {
+func CreateAdminHandler(repo OrderRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		list, err := repo.List(r.Context())
 		if err != nil {

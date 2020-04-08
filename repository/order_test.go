@@ -9,15 +9,15 @@ import (
 	storageMock "github.com/Alma-media/taxi/storage/mock"
 )
 
-func Test_Pipe(t *testing.T) {
+func Test_OrderRepository(t *testing.T) {
 	t.Run("test if source error is propagated", func(t *testing.T) {
 		errExpected := errors.New("source failure")
 
 		source := genMock.GeneratorFailure{Err: errExpected}
 
-		wrapper := NewPipe(source, nil)
+		repository := NewOrderRepository(source, nil)
 
-		if _, err := wrapper.Order(context.Background()); err != errExpected {
+		if _, err := repository.Order(context.Background()); err != errExpected {
 			t.Errorf(`error "%v" was expected to be "%v"`, err, errExpected)
 		}
 	})
@@ -25,7 +25,7 @@ func Test_Pipe(t *testing.T) {
 	t.Run("test if error returned by original repository is propagated", func(t *testing.T) {
 		errExpected := errors.New("repository failure")
 
-		repo := storageMock.OrderFailure{Err: errExpected}
+		storage := storageMock.OrderFailure{Err: errExpected}
 
 		source := make(genMock.GeneratorSuccess)
 		go func() {
@@ -33,15 +33,15 @@ func Test_Pipe(t *testing.T) {
 			source <- "AA"
 		}()
 
-		wrapper := NewPipe(source, repo)
+		repository := NewOrderRepository(source, storage)
 
-		if _, err := wrapper.Order(context.Background()); err != errExpected {
+		if _, err := repository.Order(context.Background()); err != errExpected {
 			t.Errorf(`error "%v" was expected to be "%v"`, err, errExpected)
 		}
 	})
 
 	t.Run("test save order happy flow", func(t *testing.T) {
-		repo := storageMock.OrderSuccess{}
+		storage := storageMock.OrderSuccess{}
 
 		inputSequence := []string{"AA", "BB", "CC"}
 
@@ -55,13 +55,31 @@ func Test_Pipe(t *testing.T) {
 			}
 		}()
 
-		wrapper := NewPipe(source, repo)
+		repository := NewOrderRepository(source, storage)
 
 		for _, expected := range outputSequence {
-			order, _ := wrapper.Order(context.Background())
+			order, _ := repository.Order(context.Background())
 			if order.String() != expected {
 				t.Errorf("order %q was expected to be %q", order, expected)
 			}
+		}
+	})
+
+	t.Run("test if original repository is invoked calling List()", func(t *testing.T) {
+		errExpected := errors.New("source failure")
+
+		storage := storageMock.OrderFailure{Err: errExpected}
+
+		source := make(genMock.GeneratorSuccess)
+		go func() {
+			defer close(source)
+			source <- "AA"
+		}()
+
+		repository := NewOrderRepository(source, storage)
+
+		if _, err := repository.List(context.Background()); err != errExpected {
+			t.Errorf(`error "%v" was expected to be "%v"`, err, errExpected)
 		}
 	})
 }

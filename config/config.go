@@ -1,13 +1,27 @@
 // Package config contains service settings
 package config
 
-import (
-	"time"
-)
+import "time"
 
 // Config contains settings of the service
 type Config struct {
+	HTTP HTTP
+
 	Generator Generator
+
+	Storage Storage
+}
+
+// HTTP server config
+type HTTP struct {
+	// Address to use for the API
+	Address string
+}
+
+// Storage config
+type Storage struct {
+	// MaxSize contains the max number of elements (orders) to be stored
+	MaxSize int
 }
 
 // Generator config
@@ -31,6 +45,12 @@ type Generator struct {
 // - support default values
 func New() Config {
 	return Config{
+		HTTP: HTTP{
+			Address: ":8080",
+		},
+		Storage: Storage{
+			MaxSize: 1<<7 - 1,
+		},
 		Generator: Generator{
 			KeySize:         2,
 			KeyBytes:        "ABCDEFGHIJKLMNOPQRSTUVWXYZ",

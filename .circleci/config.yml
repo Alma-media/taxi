@@ -19,9 +19,18 @@ jobs:
             - "/go/pkg"
 
       - run:
-          name: Linter Tests
+          name: Install Dependencies
           command: |
             make install
+
+      - run:
+          name: Build Check
+          command: |
+            make build
+
+      - run:
+          name: Linter Tests
+          command: |
             make lint
 
       - run:

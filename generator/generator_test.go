@@ -9,10 +9,13 @@ import (
 )
 
 func Test_Generator(t *testing.T) {
-	config := config.New().Generator
-
-	// make interval as small as possible to trigger the timer at least once
-	config.ReplaceInterval = time.Nanosecond
+	config := config.Generator{
+		KeySize:  10,
+		PoolSize: 50,
+		KeyBytes: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+		// make interval as short as possible to trigger the timer at least once
+		ReplaceInterval: time.Nanosecond,
+	}
 
 	t.Run("test generator initialization", func(t *testing.T) {
 		gen := New(config)
@@ -60,7 +63,7 @@ func Test_Generator(t *testing.T) {
 		}
 		defer gen.Close()
 
-		for i := 0; i < config.PoolSize*2; i++ {
+		for i := 0; i < config.PoolSize*10; i++ {
 			key, err := gen.Generate(context.Background())
 			if err != nil {
 				t.Errorf("unexpected error: %s", err)

@@ -1,2 +1,2 @@
 # generator
-generator is an abstract source of random orders
+Package generator contains an abstract source of random orders

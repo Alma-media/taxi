@@ -4,11 +4,17 @@
 [![Report Card][report-badge]][report-link]
 
 ## Installation
+
 ```bash
 $ go get github.com/Alma-media/taxi
 ```
 
 ## Docker
+- Build:
+```bash
+$ docker build . -t taxi
+```
+- Run:
 ```bash
 $ docker run --rm -it -p 127.0.0.1:8080:8080 taxi
 ```
@@ -22,7 +28,7 @@ $ docker run --rm -it -p 127.0.0.1:8080:8080 taxi
 - find approximate limit to enable throttling
 
 ### Config
-- use some library to parse the values from ENV, flags, toml, yaml, json ...
+- find a better library to parse the values from flags, toml, yaml, json ...
 
 ### Repository
 - switch to event driven approach and get rid of proxy (current repository implementation) to increase the throughput

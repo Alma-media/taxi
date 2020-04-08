@@ -21,7 +21,7 @@ type OrderRepository struct {
 // NewOrderRepository creates a "proxy" for provided generator in order to count
 // the calls and store orders to the repository
 // Further improvements:
-// - use event driven architecture instead of global storage
+// - use event driven approach instead of global storage
 func NewOrderRepository(source Source, storage storage.Order) *OrderRepository {
 	return &OrderRepository{
 		storage: storage,
@@ -29,7 +29,7 @@ func NewOrderRepository(source Source, storage storage.Order) *OrderRepository {
 	}
 }
 
-// Order wraps original Order() method
+// Order returns a random order
 func (p *OrderRepository) Order(ctx context.Context) (*model.Order, error) {
 	key, err := p.source.Generate(ctx)
 	if err != nil {
@@ -46,7 +46,7 @@ func (p *OrderRepository) Order(ctx context.Context) (*model.Order, error) {
 	return order, nil
 }
 
-// List wrap original List() method
+// List simply calls storage List() method
 func (p *OrderRepository) List(ctx context.Context) ([]*model.Order, error) {
 	return p.storage.List(ctx)
 }

@@ -30,21 +30,3 @@ type Generator struct {
 	// ReplaceInterval is an interval to replace an order in the pool with a new one
 	ReplaceInterval time.Duration `default:"200ms"`
 }
-
-// New creates a new config
-// Further improvements:
-// - parse the values from flags/env/yaml/toml/json/...
-// - support default values
-func New() Config {
-	return Config{
-		HTTP: HTTP{
-			Address: ":8080",
-		},
-		Generator: Generator{
-			KeySize:         2,
-			KeyBytes:        "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-			PoolSize:        50,
-			ReplaceInterval: 200 * time.Millisecond,
-		},
-	}
-}

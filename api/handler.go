@@ -3,6 +3,7 @@
 // - enable the access control for public and private endpoints (use middleware)
 // - retrieve codec from context to use encoder (e.g. codec.NewEncoder(w).Encode(order))
 // - pass logger to the handler (intermal errors should be logged but not exposed to the user)
+// - find approximate limit to enable trottling
 package api
 
 import (

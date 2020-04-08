@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,15 +11,23 @@ import (
 	"github.com/Alma-media/taxi/generator"
 	"github.com/Alma-media/taxi/repository"
 	"github.com/Alma-media/taxi/storage/spheric"
+
+	"github.com/kelseyhightower/envconfig"
+	"github.com/sirupsen/logrus"
 )
 
-const prefix = "taxi: "
+const service = "order"
 
 func main() {
-	// TODO: consider using logrus
-	logger := log.New(os.Stdout, prefix, log.Lshortfile)
+	logger := logrus.New().WithField("service", service)
 
-	config := config.New()
+	var config config.Config
+	// TODO: find a better ENV parser
+	if err := envconfig.Process(service, &config); err != nil {
+		logger.Fatalf("Unable to read the configuration: %s", err)
+	}
+
+	logger.Infof("Starting the service with configuration: %#v", config)
 
 	generator := generator.New(config.Generator)
 	if err := generator.Init(); err != nil {
@@ -32,6 +39,7 @@ func main() {
 
 	repository := repository.NewOrderRepository(generator, storage)
 
+	// TODO: consider using fasthttp.Server to increase the performance
 	srv := http.Server{
 		Addr:    config.HTTP.Address,
 		Handler: api.NewHandler(repository),
@@ -42,18 +50,18 @@ func main() {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
 		<-sigint
-		logger.Println("Shutting down the server...")
+		logger.Infof("Shutting down the server...")
 
 		if err := srv.Shutdown(context.Background()); err != nil {
-			logger.Printf("HTTP server Shutdown: %s", err)
+			logger.Printf("Unable to shutdown HTTP server: %s", err)
 		}
 		close(idleConnsClosed)
 	}()
 
 	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-		logger.Fatalf("HTTP server ListenAndServe: %s", err)
+		logger.Fatalf("Failed to start HTTP server: %s", err)
 	}
 
 	<-idleConnsClosed
-	logger.Println("Done")
+	logger.Infof("HTTP server has been stopped")
 }

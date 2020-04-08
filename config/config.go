@@ -8,35 +8,27 @@ type Config struct {
 	HTTP HTTP
 
 	Generator Generator
-
-	Storage Storage
 }
 
 // HTTP server config
 type HTTP struct {
 	// Address to use for the API
-	Address string
-}
-
-// Storage config
-type Storage struct {
-	// MaxSize contains the max number of elements (orders) to be stored
-	MaxSize int
+	Address string `default:":8080"`
 }
 
 // Generator config
 type Generator struct {
 	// KeySize is a size of unique order identifier
-	KeySize int
+	KeySize int `default:"2"`
 
 	// KeyBytes contains allowed symbols to be used for key generation
-	KeyBytes string
+	KeyBytes string `default:"ABCDEFGHIJKLMNOPQRSTUVWXYZ"`
 
 	// PoolSize contains the length of order pool
-	PoolSize int
+	PoolSize int `default:"50"`
 
 	// ReplaceInterval is an interval to replace an order in the pool with a new one
-	ReplaceInterval time.Duration
+	ReplaceInterval time.Duration `default:"200ms"`
 }
 
 // New creates a new config
@@ -47,9 +39,6 @@ func New() Config {
 	return Config{
 		HTTP: HTTP{
 			Address: ":8080",
-		},
-		Storage: Storage{
-			MaxSize: 1<<7 - 1,
 		},
 		Generator: Generator{
 			KeySize:         2,

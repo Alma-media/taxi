@@ -19,7 +19,7 @@ $ docker build . -t taxi
 $ docker run --rm -it -p 127.0.0.1:8080:8080 taxi
 ```
 
-## Furter improvements
+## Further improvements
 
 ### API
 - enable the access control for public and private endpoints (use middleware)

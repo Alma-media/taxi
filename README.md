@@ -3,6 +3,11 @@
 [![Build Status][circleci-badge]][circleci-link]
 [![Report Card][report-badge]][report-link]
 
+## Installation
+```bash
+$ go get github.com/Alma-media/taxi
+```
+
 ## Docker
 ```bash
 $ docker run --rm -it -p 127.0.0.1:8080:8080 taxi

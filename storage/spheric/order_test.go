@@ -1,6 +1,7 @@
 package spheric
 
 import (
+	"context"
 	"reflect"
 	"testing"
 
@@ -24,7 +25,8 @@ func Test_OrderStorage(t *testing.T) {
 		repo := NewOrderStorage()
 
 		for _, order := range toBeSaved {
-			repo.Save(nil, order)
+			// no need to check the error since current implementation cannot return it
+			_, _ = repo.Save(context.TODO(), order)
 		}
 
 		expected := map[string]*model.Order{"AA": aa, "BB": bb, "CC": cc, "DD": dd}
@@ -38,12 +40,13 @@ func Test_OrderStorage(t *testing.T) {
 		repo := NewOrderStorage()
 
 		for _, order := range toBeSaved {
-			repo.Save(nil, order)
+			// no need to check the error
+			_, _ = repo.Save(context.TODO(), order)
 		}
 
 		expected := []*model.Order{aa, bb, cc, dd}
 
-		actual, _ := repo.List(nil)
+		actual, _ := repo.List(context.TODO())
 
 		if !reflect.DeepEqual(actual, expected) {
 			t.Errorf("list %v was expected to contain %v", actual, expected)

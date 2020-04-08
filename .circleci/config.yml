@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.14
+    working_directory: /go/src/github.com/Alma-media/taxi
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-deps-{{ checksum "go.mod" }}
+          - v1-deps-
+
+      - save_cache:
+          key: v1-deps-{{ checksum "go.mod" }}
+          paths:
+            - "/go/pkg"
+
+      - run:
+          name: Linter Tests
+          command: |
+            make install
+            make lint
+
+      - run:
+          name: Unit Tests
+          command: |
+            make test

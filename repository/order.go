@@ -20,6 +20,8 @@ type OrderRepository struct {
 
 // NewOrderRepository creates a "proxy" for provided generator in order to count
 // the calls and store orders to the repository
+// Further improvements:
+// - use event driven architecture instead of global storage
 func NewOrderRepository(source Source, storage storage.Order) *OrderRepository {
 	return &OrderRepository{
 		storage: storage,

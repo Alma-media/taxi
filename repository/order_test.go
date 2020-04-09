@@ -10,24 +10,12 @@ import (
 )
 
 func Test_OrderRepository(t *testing.T) {
-	t.Run("test if source error is propagated", func(t *testing.T) {
-		errExpected := errors.New("source failure")
-
-		source := genMock.GeneratorFailure{Err: errExpected}
-
-		repository := NewOrderRepository(source, nil)
-
-		if _, err := repository.Order(context.Background()); err != errExpected {
-			t.Errorf(`error "%v" was expected to be "%v"`, err, errExpected)
-		}
-	})
-
 	t.Run("test if error returned by original repository is propagated", func(t *testing.T) {
 		errExpected := errors.New("repository failure")
 
 		storage := storageMock.OrderFailure{Err: errExpected}
 
-		source := make(genMock.GeneratorSuccess)
+		source := make(genMock.Generator)
 		go func() {
 			defer close(source)
 			source <- "AA"
@@ -47,7 +35,7 @@ func Test_OrderRepository(t *testing.T) {
 
 		outputSequence := []string{"AA - 1", "BB - 1", "CC - 1"}
 
-		source := make(genMock.GeneratorSuccess)
+		source := make(genMock.Generator)
 		go func() {
 			defer close(source)
 			for _, id := range inputSequence {
@@ -70,7 +58,7 @@ func Test_OrderRepository(t *testing.T) {
 
 		storage := storageMock.OrderFailure{Err: errExpected}
 
-		source := make(genMock.GeneratorSuccess)
+		source := make(genMock.Generator)
 		go func() {
 			defer close(source)
 			source <- "AA"

@@ -9,7 +9,7 @@ import (
 
 // Source is an abstract source of orders
 type Source interface {
-	Generate(ctx context.Context) (string, error)
+	Generate() string
 }
 
 // OrderRepository combines orders source and storage
@@ -31,12 +31,7 @@ func NewOrderRepository(source Source, storage storage.Order) *OrderRepository {
 
 // Order returns a random order
 func (p *OrderRepository) Order(ctx context.Context) (*model.Order, error) {
-	key, err := p.source.Generate(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	order, err := p.storage.Save(ctx, key)
+	order, err := p.storage.Save(ctx, p.source.Generate())
 	if err != nil {
 		return nil, err
 	}

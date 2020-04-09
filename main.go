@@ -16,10 +16,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Version of the build
+var Version = "development"
+
 const service = "order"
 
 func main() {
-	logger := logrus.New().WithField("service", service)
+	logger := logrus.New().
+		WithField("service", service).
+		WithField("version", Version)
 
 	var config config.Config
 	// TODO: find a better ENV parser
@@ -30,10 +35,11 @@ func main() {
 	logger.Infof("Starting the service with configuration: %#v", config)
 
 	generator := generator.New(config.Generator)
-	if err := generator.Init(); err != nil {
-		logger.Fatalf("Cannot initialize order generator: %s", err)
-	}
-	defer generator.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	generator.Run(ctx)
 
 	storage := spheric.NewOrderStorage()
 
